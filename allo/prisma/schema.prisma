@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  RELEASED
+  EXPIRED
+}
+
+model Warehouse {
+  id        String            @id @default(cuid())
+  code      String            @unique
+  name      String
+  city      String?
+  stocks    Stock[]
+  items     ReservationItem[]
+  createdAt DateTime          @default(now())
+}
+
+model Product {
+  id        String            @id @default(cuid())
+  sku       String            @unique
+  name      String
+  stocks    Stock[]
+  items     ReservationItem[]
+  createdAt DateTime          @default(now())
+}
+
+model Stock {
+  warehouseId String
+  productId   String
+  onHand      Int       @default(0)
+  reserved    Int       @default(0)
+  version     Int       @default(0)
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  product     Product   @relation(fields: [productId], references: [id])
+  updatedAt   DateTime  @updatedAt
+
+  @@id([warehouseId, productId])
+  @@index([productId])
+}
+
+model Reservation {
+  id             String            @id @default(cuid())
+  idempotencyKey String            @unique
+  status         ReservationStatus @default(PENDING)
+  expiresAt      DateTime
+  items          ReservationItem[]
+  createdAt      DateTime          @default(now())
+
+  @@index([status, expiresAt])
+}
+
+model ReservationItem {
+  id            String      @id @default(cuid())
+  reservationId String
+  warehouseId   String
+  productId     String
+  quantity      Int
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  warehouse     Warehouse   @relation(fields: [warehouseId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id])
+
+  @@index([reservationId])
+}
