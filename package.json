@@ -1,0 +1,43 @@
+{
+  "name": "allo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-warehouse inventory reservation system with concurrency-safe stock holds",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "test:db": "dotenv -e .env.test -- prisma migrate deploy",
+    "test": "dotenv -e .env.test -- vitest run",
+    "ingest": "tsx scripts/ingest-policies.ts",
+    "mcp:stdio": "tsx mcp/stdio.ts",
+    "agent": "tsx scripts/agent.ts",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run -c vitest.unit.config.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.132.1",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@prisma/client": "^6.0.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.8",
+    "@huggingface/transformers": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "dotenv-cli": "^7.4.2",
+    "prisma": "^6.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
